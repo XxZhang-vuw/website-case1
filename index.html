@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科研创新课题组 | 前沿研究与学术交流</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GSAP 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* 自定义样式 */
+        :root {
+            --primary-color: #0A2463;
+            --secondary-color: #E6AF2E;
+            --accent-color: #3E92CC;
+            --dark-bg: #051337;
+            --light-text: #FFFFFF;
+            --gray-text: #CCCCCC;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(10, 36, 99, 0.7), rgba(5, 19, 55, 0.9));
+            z-index: -1;
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--secondary-color);
+        }
+        
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .team-member {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .team-member-info {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(10, 36, 99, 0.9), transparent);
+            transition: bottom 0.3s ease;
+        }
+        
+        .team-member:hover .team-member-info {
+            bottom: 0;
+        }
+        
+        .publication-card {
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.3s ease, border-left-color 0.3s ease;
+        }
+        
+        .publication-card:hover {
+            transform: translateX(5px);
+            border-left-color: var(--secondary-color);
+        }
+        
+        .news-date {
+            background-color: var(--primary-color);
+            color: white;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            border: 2px solid var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #051337;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--dark-bg);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d9a42a;
+            transform: translateY(-2px);
+        }
+        
+        .scroll-down {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-20px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.75rem;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .desktop-menu {
+                display: none;
+            }
+        }
+        
+        /* 加载动画 */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 滚动动画 */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 3D模型容器 */
+        #model-container {
+            width: 100%;
+            height: 400px;
+            background-color: rgba(10, 36, 99, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        /* 图表容器 */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 加载动画 -->
+    <div class="loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <p class="text-white font-semibold">加载中...</p>
+        </div>
+    </div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 left-0 w-full bg-transparent z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="#" class="flex items-center">
+                <span class="text-white text-2xl font-bold">科研<span class="text-yellow-500">创新</span></span>
+            </a>
+            
+            <!-- 桌面端菜单 -->
+            <div class="hidden md:flex space-x-8">
+                <a href="#about" class="nav-link text-white hover:text-yellow-500">关于我们</a>
+                <a href="#research" class="nav-link text-white hover:text-yellow-500">研究方向</a>
+                <a href="#team" class="nav-link text-white hover:text-yellow-500">团队成员</a>
+                <a href="#publications" class="nav-link text-white hover:text-yellow-500">研究成果</a>
+                <a href="#news" class="nav-link text-white hover:text-yellow-500">新闻动态</a>
+                <a href="#contact" class="nav-link text-white hover:text-yellow-500">联系我们</a>
+            </div>
+            
+            <!-- 移动端菜单按钮 -->
+            <div class="md:hidden">
+                <button id="menu-toggle" class="text-white focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="md:hidden bg-gray-900 hidden">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="#about" class="text-white hover:text-yellow-500 py-2 border-b border-gray-800">关于我们</a>
+                <a href="#research" class="text-white hover:text-yellow-500 py-2 border-b border-gray-800">研究方向</a>
+                <a href="#team" class="text-white hover:text-yellow-500 py-2 border-b border-gray-800">团队成员</a>
+                <a href="#publications" class="text-white hover:text-yellow-500 py-2 border-b border-gray-800">研究成果</a>
+                <a href="#news" class="text-white hover:text-yellow-500 py-2 border-b border-gray-800">新闻动态</a>
+                <a href="#contact" class="text-white hover:text-yellow-500 py-2">联系我们</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero-section flex items-center justify-center">
+        <canvas id="hero-canvas"></canvas>
+        <div class="gradient-overlay"></div>
+        <div class="container mx-auto px-4 z-10">
+            <div class="hero-content text-center text-white">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6 opacity-0" id="hero-title">前沿科技研究</h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-0" id="hero-subtitle">
+                    致力于探索科学前沿，推动技术创新，为人类社会发展贡献智慧力量
+                </p>
+                <div class="flex flex-col md:flex-row justify-center gap-4 opacity-0" id="hero-buttons">
+                    <a href="#about" class="btn-primary px-8 py-3 rounded-md font-semibold">了解更多</a>
+                    <a href="#contact" class="btn-secondary px-8 py-3 rounded-md font-semibold">联系我们</a>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-down text-white">
+            <i class="fas fa-chevron-down text-2xl"></i>
+        </div>
+    </section>
+
+    <!-- 关于我们 -->
+    <section id="about" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2 fade-in">
+                    <h2 class="section-title text-3xl font-bold text-gray-800">关于我们</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        我们是一支由顶尖科学家和研究人员组成的创新团队，致力于推动前沿科技领域的研究与应用。
+                        自2010年成立以来，我们在人工智能、量子计算、生物医学等领域取得了一系列突破性成果。
+                    </p>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        我们的使命是通过科学研究解决人类面临的重大挑战，为社会发展和人类福祉做出贡献。
+                        我们与全球顶尖高校和研究机构保持紧密合作，共同推动科学进步。
+                    </p>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-flask text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">前沿研究</h4>
+                                <p class="text-sm text-gray-500">探索科学未知领域</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-users text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">团队协作</h4>
+                                <p class="text-sm text-gray-500">跨学科合作创新</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-lightbulb text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">技术创新</h4>
+                                <p class="text-sm text-gray-500">转化科研成果</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4">
+                                <i class="fas fa-globe text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold">国际合作</h4>
+                                <p class="text-sm text-gray-500">全球学术交流</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 fade-in">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/5e592e4ad29a440da6102ca8236ed33b~tplv-a9rns2rl98-image.image?rcl=20251027161822A00F099167DCEE1DCF14&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1764145120&x-signature=f3SW6GSFPSg5BBrvpZe5KIaKlg8%3D" 
+                         alt="科研团队在实验室工作" 
+                         class="rounded-lg shadow-xl w-full h-auto">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 研究方向 -->
+    <section id="research" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="section-title text-3xl font-bold text-gray-800 inline-block">研究方向</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto mt-8">
+                    我们的研究团队专注于多个前沿科技领域，通过跨学科合作，
+                    推动科学创新和技术进步。
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 研究方向 1 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 card fade-in">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-brain text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">人工智能与机器学习</h3>
+                    <p class="text-gray-600 mb-6">
+                        研究深度学习、强化学习、自然语言处理等前沿技术，
+                        开发智能系统解决复杂问题。
+                    </p>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>深度学习算法优化</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>计算机视觉应用</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>自然语言理解与生成</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="text-blue-600 font-semibold hover:text-blue-800 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 研究方向 2 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 card fade-in" style="transition-delay: 0.2s;">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-atom text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">量子计算与信息科学</h3>
+                    <p class="text-gray-600 mb-6">
+                        探索量子计算理论与实验实现，开发量子算法和量子信息处理技术，
+                        解决经典计算难以处理的问题。
+                    </p>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>量子算法设计</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>量子纠错码</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>量子模拟与应用</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="text-blue-600 font-semibold hover:text-blue-800 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+                
+                <!-- 研究方向 3 -->
+                <div class="bg-white rounded-lg shadow-lg p-8 card fade-in" style="transition-delay: 0.4s;">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-dna text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-4">生物医学工程</h3>
+                    <p class="text-gray-600 mb-6">
+                        结合工程学和生物学原理，开发创新的医疗技术和设备，
+                        提高疾病诊断和治疗水平。
+                    </p>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>生物传感器技术</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>组织工程与再生医学</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-green-500 mr-2"></i>
+                            <span>医学影像分析</span>
+                        </li>
+                    </ul>
+                    <a href="#" class="text-blue-600 font-semibold hover:text-blue-800 flex items-center">
+                        了解更多 <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 3D研究成果可视化 -->
+            <div class="mt-20 fade-in">
+                <div class="text-center mb-10">
+                    <h3 class="text-2xl font-bold mb-4">研究成果可视化</h3>
+                    <p class="text-gray-600 max-w-2xl mx-auto">
+                        通过交互式3D模型展示我们的研究成果，
+                        直观了解复杂的科学概念和数据。
+                    </p>
+                </div>
+                <div id="model-container" class="shadow-lg"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 团队成员 -->
+    <section id="team" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="section-title text-3xl font-bold text-gray-800 inline-block">团队成员</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto mt-8">
+                    我们拥有一支由顶尖科学家、研究人员和学生组成的多元化团队，
+                    共同致力于推动科学前沿的发展。
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <!-- 团队成员 1 -->
+                <div class="team-member rounded-lg overflow-hidden shadow-lg fade-in">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/43df7936126a4e828c1218b01ce335f4~tplv-a9rns2rl98-image.image?rcl=20251027161822A00F099167DCEE1DCF14&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1764145124&x-signature=PRVSbFJkG3gNq97wFgsmR7vC7vY%3D" 
+                         alt="张教授" 
+                         class="w-full h-80 object-cover">
+                    <div class="team-member-info">
+                        <h3 class="text-xl font-bold text-white mb-2">张明教授</h3>
+                        <p class="text-yellow-300 mb-3">首席科学家 / 团队负责人</p>
+                        <p class="text-white text-sm mb-4">
+                            人工智能领域专家，专注于深度学习和计算机视觉研究，
+                            发表论文200余篇，主持国家级科研项目10余项。
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fab fa-google"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 团队成员 2 -->
+                <div class="team-member rounded-lg overflow-hidden shadow-lg fade-in" style="transition-delay: 0.1s;">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/43df7936126a4e828c1218b01ce335f4~tplv-a9rns2rl98-image.image?rcl=20251027161822A00F099167DCEE1DCF14&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1764145124&x-signature=PRVSbFJkG3gNq97wFgsmR7vC7vY%3D" 
+                         alt="李博士" 
+                         class="w-full h-80 object-cover">
+                    <div class="team-member-info">
+                        <h3 class="text-xl font-bold text-white mb-2">李华博士</h3>
+                        <p class="text-yellow-300 mb-3">量子计算研究员</p>
+                        <p class="text-white text-sm mb-4">
+                            量子信息科学专家，专注于量子算法设计和量子纠错码研究，
+                            在Nature和Science发表多篇高水平论文。
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fab fa-google"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 团队成员 3 -->
+                <div class="team-member rounded-lg overflow-hidden shadow-lg fade-in" style="transition-delay: 0.2s;">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/43df7936126a4e828c1218b01ce335f4~tplv-a9rns2rl98-image.image?rcl=20251027161822A00F099167DCEE1DCF14&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1764145124&x-signature=PRVSbFJkG3gNq97wFgsmR7vC7vY%3D" 
+                         alt="王研究员" 
+                         class="w-full h-80 object-cover">
+                    <div class="team-member-info">
+                        <h3 class="text-xl font-bold text-white mb-2">王芳研究员</h3>
+                        <p class="text-yellow-300 mb-3">生物医学工程师</p>
+                        <p class="text-white text-sm mb-4">
+                            生物医学工程专家，专注于生物传感器和医学影像分析研究，
+                            拥有多项医疗设备发明专利。
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fab fa-google"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 团队成员 4 -->
+                <div class="team-member rounded-lg overflow-hidden shadow-lg fade-in" style="transition-delay: 0.3s;">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/43df7936126a4e828c1218b01ce335f4~tplv-a9rns2rl98-image.image?rcl=20251027161822A00F099167DCEE1DCF14&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1764145124&x-signature=PRVSbFJkG3gNq97wFgsmR7vC7vY%3D" 
+                         alt="赵博士" 
+                         class="w-full h-80 object-cover">
+                    <div class="team-member-info">
+                        <h3 class="text-xl font-bold text-white mb-2">赵强博士</h3>
+                        <p class="text-yellow-300 mb-3">机器学习研究员</p>
+                        <p class="text-white text-sm mb-4">
+                            人工智能专家，专注于自然语言处理和强化学习研究，
+                            开发了多个具有广泛影响的AI系统。
+                        </p>
+                        <div class="flex space-x-3">
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fab fa-google"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="#" class="text-white hover:text-yellow-300">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#" class="btn-primary px-8 py-3 rounded-md font-semibold inline-block">
+                    查看全部团队成员
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 研究成果 -->
+    <section id="publications" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="section-title text-3xl font-bold text-gray-800 inline-block">研究成果</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto mt-8">
+                    我们的研究团队在各个领域取得了一系列突破性成果，
+                    发表了多篇高水平论文，获得了多项专利。
+                </p>
+            </div>
+            
+            <!-- 研究成果统计 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center fade-in">
+                    <div class="text-4xl font-bold text-blue-600 mb-4">120+</div>
+                    <h3 class="text-xl font-semibold mb-2">发表论文</h3>
+                    <p class="text-gray-600">在顶级学术期刊和会议上发表</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center fade-in" style="transition-delay: 0.2s;">
+                    <div class="text-4xl font-bold text-blue-600 mb-4">35+</div>
+                    <h3 class="text-xl font-semibold mb-2">专利授权</h3>
+                    <p class="text-gray-600">涵盖多个技术领域的创新专利</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-lg p-8 text-center fade-in" style="transition-delay: 0.4s;">
+                    <div class="text-4xl font-bold text-blue-600 mb-4">20+</div>
+                    <h3 class="text-xl font-semibold mb-2">科研项目</h3>
+                    <p class="text-gray-600">主持和参与国家级、省部级项目</p>
+                </div>
+            </div>
+            
+            <!-- 研究成果图表 -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-16 fade-in">
+                <h3 class="text-2xl font-bold mb-6">研究成果分布</h3>
+                <div class="chart-container">
+                    <canvas id="publicationsChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 代表性论文 -->
+            <div class="fade-in">
+                <h3 class="text-2xl font-bold mb-8">代表性论文</h3>
+                
+                <div class="space-y-6">
+                    <!-- 论文 1 -->
+                    <div class="publication-card bg-white p-6 rounded-lg shadow-md">
+                        <h4 class="text-xl font-bold mb-2">深度学习在医学影像分析中的应用研究</h4>
+                        <p class="text-gray-600 mb-4">
+                            张明, 李华, 王芳, 赵强
+                        </p>
+                        <p class="text-gray-500 mb-4">
+                            <i class="fas fa-book mr-2"></i> Nature Medicine, 2023, 29(4): 876-885
+                        </p>
+                        <p class="text-gray-700">
+                            本文提出了一种基于深度学习的医学影像分析方法，能够自动识别多种疾病特征，
+                            在临床诊断中取得了显著效果，提高了诊断准确率和效率。
+                        </p>
+                        <div class="mt-4 flex items-center">
+                            <a href="#" class="text-blue-600 hover:text-blue-800 mr-6">
+                                <i class="fas fa-file-pdf mr-1"></i> 下载PDF
+                            </a>
+                            <a href="#" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-external-link-alt mr-1"></i> 查看原文
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 论文 2 -->
+                    <div class="publication-card bg-white p-6 rounded-lg shadow-md">
+                        <h4 class="text-xl font-bold mb-2">量子计算在密码学中的应用与挑战</h4>
+                        <p class="text-gray-600 mb-4">
+                            李华, 张明, 王强, 刘伟
+                        </p>
+                        <p class="text-gray-500 mb-4">
+                            <i class="fas fa-book mr-2"></i> Science, 2022, 376(6597): 1123-1130
+                        </p>
+                        <p class="text-gray-700">
+                            本文探讨了量子计算对现有密码系统的影响，提出了新型量子-resistant密码算法，
+                            为后量子时代的信息安全提供了新的解决方案。
+                        </p>
+                        <div class="mt-4 flex items-center">
+                            <a href="#" class="text-blue-600 hover:text-blue-800 mr-6">
+                                <i class="fas fa-file-pdf mr-1"></i> 下载PDF
+                            </a>
+                            <a href="#" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-external-link-alt mr-1"></i> 查看原文
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- 论文 3 -->
+                    <div class="publication-card bg-white p-6 rounded-lg shadow-md">
+                        <h4 class="text-xl font-bold mb-2">基于生物传感器的实时健康监测系统</h4>
+                        <p class="text-gray-600 mb-4">
+                            王芳, 赵强, 张明, 李华
+                        </p>
+                        <p class="text-gray-500 mb-4">
+                            <i class="fas fa-book mr-2"></i> IEEE Transactions on Biomedical Engineering, 2023, 70(8): 2145-2156
+                        </p>
+                        <p class="text-gray-700">
+                            本文设计了一种新型生物传感器系统，能够实时监测人体生理参数，
+                            为健康管理和疾病预防提供了新的技术手段。
+                        </p>
+                        <div class="mt-4 flex items-center">
+                            <a href="#" class="text-blue-600 hover:text-blue-800 mr-6">
+                                <i class="fas fa-file-pdf mr-1"></i> 下载PDF
+                            </a>
+                            <a href="#" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-external-link-alt mr-1"></i> 查看原文
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-12">
+                    <a href="#" class="btn-primary px-8 py-3 rounded-md font-semibold inline-block">
+                        查看全部论文
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 新闻动态 -->
+    <section id="news" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="section-title text-3xl font-bold text-gray-800 inline-block">新闻动态</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto mt-8">
+                    了解我们团队的最新研究进展、学术活动和重要新闻。
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- 最新新闻 -->
+                <div class="fade-in">
+                    <h3 class="text-2xl font-bold mb-8">最新动态</h3>
+                    
+                    <div class="space-y-8">
+                        <!-- 新闻 1 -->
+                        <div class="flex gap-6">
+                            <div class="news-date flex-shrink-0">
+                                <span class="text-lg font-bold">15</span>
+                                <span class="text-sm">6月</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2">张明教授获得国家自然科学奖</h4>
+                                <p class="text-gray-600 mb-4">
+                                    我团队负责人张明教授因其在人工智能领域的杰出贡献，
+                                    获得2023年度国家自然科学奖二等奖。
+                                </p>
+                                <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">
+                                    阅读更多 <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- 新闻 2 -->
+                        <div class="flex gap-6">
+                            <div class="news-date flex-shrink-0">
+                                <span class="text-lg font-bold">28</span>
+                                <span class="text-sm">5月</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2">我团队在量子计算领域取得重大突破</h4>
+                                <p class="text-gray-600 mb-4">
+                                    我团队在量子计算领域取得重大突破，相关研究成果发表在国际顶级期刊Science上。
+                                </p>
+                                <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">
+                                    阅读更多 <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- 新闻 3 -->
+                        <div class="flex gap-6">
+                            <div class="news-date flex-shrink-0">
+                                <span class="text-lg font-bold">10</span>
+                                <span class="text-sm">5月</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-2">2023国际人工智能与量子计算研讨会成功举办</h4>
+                                <p class="text-gray-600 mb-4">
+                                    由我团队主办的2023国际人工智能与量子计算研讨会在线上线下成功举办，
+                                    来自全球20多个国家的专家学者参与了此次研讨会。
+                                </p>
+                                <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">
+                                    阅读更多 <i class="fas fa-arrow-right ml-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-10">
+                        <a href="#" class="btn-primary px-8 py-3 rounded-md font-semibold inline-block">
+                            查看全部新闻
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 学术活动日历 -->
+                <div class="fade-in" style="transition-delay: 0.3s;">
+                    <h3 class="text-2xl font-bold mb-8">学术活动日历</h3>
+                    
+                    <div class="timeline">
+                        <!-- 活动 1 -->
+                        <div class="timeline-item bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-xl font-bold">量子计算前沿技术讲座</h4>
+                                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">即将举行</span>
+                            </div>
+                            <p class="text-gray-500 mb-2">
+                                <i class="far fa-calendar-alt mr-2"></i> 2023年7月15日 14:00-16:00
+                            </p>
+                            <p class="text-gray-500 mb-4">
+                                <i class="fas fa-map-marker-alt mr-2"></i> 科学楼A102报告厅
+                            </p>
+                            <p class="text-gray-700 mb-4">
+                                邀请国际知名量子计算专家进行学术交流，介绍量子计算领域的最新进展和未来发展方向。
+                            </p>
+                            <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">
+                                报名参加 <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        
+                        <!-- 活动 2 -->
+                        <div class="timeline-item bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-xl font-bold">人工智能与医疗健康研讨会</h4>
+                                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">即将举行</span>
+                            </div>
+                            <p class="text-gray-500 mb-2">
+                                <i class="far fa-calendar-alt mr-2"></i> 2023年8月20日 9:00-17:00
+                            </p>
+                            <p class="text-gray-500 mb-4">
+                                <i class="fas fa-map-marker-alt mr-2"></i> 国际会议中心B厅
+                            </p>
+                            <p class="text-gray-700 mb-4">
+                                探讨人工智能技术在医疗健康领域的应用与挑战，促进学术界与产业界的交流合作。
+                            </p>
+                            <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">
+                                报名参加 <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                        
+                        <!-- 活动 3 -->
+                        <div class="timeline-item bg-white p-6 rounded-lg shadow-md">
+                            <div class="flex justify-between items-start mb-4">
+                                <h4 class="text-xl font-bold">实验室开放日</h4>
+                                <span class="bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded">过去活动</span>
+                            </div>
+                            <p class="text-gray-500 mb-2">
+                                <i class="far fa-calendar-alt mr-2"></i> 2023年5月20日 10:00-16:00
+                            </p>
+                            <p class="text-gray-500 mb-4">
+                                <i class="fas fa-map-marker-alt mr-2"></i> 科学园B区12号楼
+                            </p>
+                            <p class="text-gray-700 mb-4">
+                                面向公众开放实验室，展示最新科研成果，普及科学知识，激发青少年对科学的兴趣。
+                            </p>
+                            <a href="#" class="text-blue-600 font-semibold hover:text-blue-800">
+                                查看活动回顾 <i class="fas fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 学术会议 -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2 fade-in">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/bc778ff43a3a4925ad5ffbe7d7794d3d~tplv-a9rns2rl98-image.image?rcl=20251027161822A00F099167DCEE1DCF14&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1764145119&x-signature=8UM8kIKg8X4BSBheRoOFhLJ7DUs%3D" 
+                         alt="学术会议场景" 
+                         class="rounded-lg shadow-xl w-full h-auto">
+                </div>
+                <div class="md:w-1/2 fade-in" style="transition-delay: 0.3s;">
+                    <h2 class="section-title text-3xl font-bold text-gray-800">参与学术交流</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        我们积极参与国际学术交流活动，与全球顶尖科研机构和学者保持紧密合作，
+                        共同推动科学进步和技术创新。
+                    </p>
+                    <p class="text-gray-600 mb-8 leading-relaxed">
+                        我们定期举办学术研讨会、讲座和培训课程，为科研人员和学生提供学习和交流的平台，
+                        促进知识共享和创新思维的碰撞。
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4 flex-shrink-0">
+                                <i class="fas fa-chalkboard-teacher text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">学术讲座</h4>
+                                <p class="text-sm text-gray-500">邀请国际知名专家学者进行学术交流</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4 flex-shrink-0">
+                                <i class="fas fa-users text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">国际研讨会</h4>
+                                <p class="text-sm text-gray-500">举办高水平国际学术会议，促进国际合作</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4 flex-shrink-0">
+                                <i class="fas fa-graduation-cap text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">学生培养</h4>
+                                <p class="text-sm text-gray-500">培养博士、硕士研究生，提供科研实践机会</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <a href="#" class="btn-primary px-8 py-3 rounded-md font-semibold inline-block">
+                            了解更多学术活动
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 联系我们 -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="section-title text-3xl font-bold text-gray-800 inline-block">联系我们</h2>
+                <p class="text-gray-600 max-w-3xl mx-auto mt-8">
+                    如果您对我们的研究感兴趣，或者有合作意向，请随时与我们联系。
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- 联系表单 -->
+                <div class="bg-gray-50 rounded-lg shadow-lg p-8 fade-in">
+                    <h3 class="text-2xl font-bold mb-6">发送消息</h3>
+                    
+                    <form id="contact-form">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="name" class="block text-gray-700 mb-2">姓名</label>
+                                <input type="text" id="name" name="name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <div>
+                                <label for="email" class="block text-gray-700 mb-2">邮箱</label>
+                                <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="subject" class="block text-gray-700 mb-2">主题</label>
+                            <input type="text" id="subject" name="subject" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="message" class="block text-gray-700 mb-2">消息</label>
+                            <textarea id="message" name="message" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary px-8 py-3 rounded-md font-semibold w-full">
+                            发送消息
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- 联系信息 -->
+                <div class="fade-in" style="transition-delay: 0.3s;">
+                    <h3 class="text-2xl font-bold mb-6">联系方式</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4 flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">地址</h4>
+                                <p class="text-gray-600">北京市海淀区中关村南大街5号</p>
+                                <p class="text-gray-600">科学园B区12号楼 100081</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4 flex-shrink-0">
+                                <i class="fas fa-phone-alt text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">电话</h4>
+                                <p class="text-gray-600">+86 10 8888 8888</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4 flex-shrink-0">
+                                <i class="fas fa-envelope text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">邮箱</h4>
+                                <p class="text-gray-600">contact@research-group.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 p-3 rounded-full mr-4 flex-shrink-0">
+                                <i class="fas fa-clock text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold mb-1">工作时间</h4>
+                                <p class="text-gray-600">周一至周五: 9:00 - 17:00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 class="font-semibold mb-4">关注我们</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                                <i class="fab fa-weixin"></i>
+                            </a>
+                            <a href="#" class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                                <i class="fab fa-weibo"></i>
+                            </a>
+                            <a href="#" class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                                <i class="fab fa-google"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- 课题组简介 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">科研创新课题组</h3>
+                    <p class="text-gray-400 mb-4">
+                        致力于前沿科技研究，推动科学创新和技术进步，
+                        为人类社会发展贡献智慧力量。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-weixin"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-weibo"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-google"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 快速链接 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="text-gray-400 hover:text-white">关于我们</a></li>
+                        <li><a href="#research" class="text-gray-400 hover:text-white">研究方向</a></li>
+                        <li><a href="#team" class="text-gray-400 hover:text-white">团队成员</a></li>
+                        <li><a href="#publications" class="text-gray-400 hover:text-white">研究成果</a></li>
+                        <li><a href="#news" class="text-gray-400 hover:text-white">新闻动态</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-white">联系我们</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 研究方向 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">研究方向</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">人工智能与机器学习</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">量子计算与信息科学</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">生物医学工程</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">数据科学与大数据分析</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">物联网与智能系统</a></li>
+                    </ul>
+                </div>
+                
+                <!-- 联系方式 -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4">联系方式</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-gray-400"></i>
+                            <span class="text-gray-400">北京市海淀区中关村南大街5号</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone-alt mt-1 mr-2 text-gray-400"></i>
+                            <span class="text-gray-400">+86 10 8888 8888</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-2 text-gray-400"></i>
+                            <span class="text-gray-400">contact@research-group.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center">
+                <p class="text-gray-400">© 2023 科研创新课题组. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载动画
+            setTimeout(function() {
+                document.querySelector('.loader').classList.add('hidden');
+            }, 1500);
+            
+            // Hero区域动画
+            gsap.to('#hero-title', {opacity: 1, y: 0, duration: 1, delay: 0.5});
+            gsap.to('#hero-subtitle', {opacity: 1, y: 0, duration: 1, delay: 0.8});
+            gsap.to('#hero-buttons', {opacity: 1, y: 0, duration: 1, delay: 1.1});
+            
+            // 导航栏滚动效果
+            const navbar = document.getElementById('navbar');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('bg-gray-900');
+                    navbar.classList.remove('bg-transparent');
+                } else {
+                    navbar.classList.add('bg-transparent');
+                    navbar.classList.remove('bg-gray-900');
+                }
+            });
+            
+            // 移动端菜单
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            menuToggle.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                        
+                        // 如果是移动端，点击后关闭菜单
+                        if (!mobileMenu.classList.contains('hidden')) {
+                            mobileMenu.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+            
+            // 滚动动画
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const fadeInObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        fadeInObserver.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            fadeElements.forEach(element => {
+                fadeInObserver.observe(element);
+            });
+            
+            // 联系表单提交
+            const contactForm = document.getElementById('contact-form');
+            
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取表单数据
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value;
+                
+                // 模拟表单提交
+                alert(`感谢您的留言，${name}！我们会尽快回复您。`);
+                
+                // 重置表单
+                contactForm.reset();
+            });
+            
+            // 初始化Three.js背景
+            initThreeJsBackground();
+            
+            // 初始化3D模型
+            initThreeJsModel();
+            
+            // 初始化图表
+            initCharts();
+        });
+        
+        // Three.js背景
+        function initThreeJsBackground() {
+            const canvas = document.getElementById('hero-canvas');
+            
+            // 创建场景
+            const scene = new THREE.Scene();
+            
+            // 创建相机
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // 创建渲染器
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                alpha: true,
+                antialias: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // 创建粒子系统
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1500;
+            
+            const posArray = new Float32Array(particlesCount * 3);
+            
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            // 创建材质
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0xE6AF2E,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            // 创建粒子系统
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            // 添加光线
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(0, 0, 1);
+            scene.add(light);
+            
+            // 动画循环
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                particlesMesh.rotation.x += 0.0005;
+                particlesMesh.rotation.y += 0.0005;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // 窗口大小调整
+            window.addEventListener('resize', function() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // Three.js 3D模型
+        function initThreeJsModel() {
+            const container = document.getElementById('model-container');
+            
+            // 创建场景
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf0f8ff);
+            
+            // 创建相机
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            // 创建渲染器
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            // 创建几何体
+            const geometry = new THREE.TorusKnotGeometry(1, 0.3, 100, 16);
+            
+            // 创建材质
+            const material = new THREE.MeshStandardMaterial({
+                color: 0x0A2463,
+                metalness: 0.7,
+                roughness: 0.2,
+                wireframe: false
+            });
+            
+            // 创建网格
+            const torusKnot = new THREE.Mesh(geometry, material);
+            scene.add(torusKnot);
+            
+            // 添加光源
+            const pointLight = new THREE.PointLight(0xE6AF2E, 1);
+            pointLight.position.set(2, 3, 4);
+            scene.add(pointLight);
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            // 添加环境贴图
+            const envMapLoader = new THREE.CubeTextureLoader();
+            const envMap = envMapLoader.load([
+                'https://threejs.org/examples/textures/cube/skybox/px.jpg',
+                'https://threejs.org/examples/textures/cube/skybox/nx.jpg',
+                'https://threejs.org/examples/textures/cube/skybox/py.jpg',
+                'https://threejs.org/examples/textures/cube/skybox/ny.jpg',
+                'https://threejs.org/examples/textures/cube/skybox/pz.jpg',
+                'https://threejs.org/examples/textures/cube/skybox/nz.jpg'
+            ]);
+            scene.environment = envMap;
+            
+            // 动画循环
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                torusKnot.rotation.x += 0.01;
+                torusKnot.rotation.y += 0.005;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // 窗口大小调整
+            window.addEventListener('resize', function() {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            });
+            
+            // 鼠标交互
+            container.addEventListener('mousemove', function(event) {
+                const mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                const mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+                
+                gsap.to(torusKnot.rotation, {
+                    x: mouseY * 0.5,
+                    y: mouseX * 0.5,
+                    duration: 2
+                });
+            });
+        }
+        
+        // 初始化图表
+        function initCharts() {
+            const ctx = document.getElementById('publicationsChart').getContext('2d');
+            
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['2018', '2019', '2020', '2021', '2022', '2023'],
+                    datasets: [
+                        {
+                            label: '发表论文',
+                            data: [15, 18, 22, 25, 28, 32],
+                            backgroundColor: '#0A2463',
+                            borderColor: '#0A2463',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '专利授权',
+                            data: [3, 5, 7, 8, 10, 12],
+                            backgroundColor: '#E6AF2E',
+                            borderColor: '#E6AF2E',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '数量'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '年份'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
